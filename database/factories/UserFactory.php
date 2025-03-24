@@ -23,10 +23,14 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-        return [
+        return [ // modificar datos acorde a la creación de la BBDD 
+                // utilizar $this->faker mejor que fake() 
             'name' => fake()->name(),
+            'surname' => fake()->name(),
+            'name_user' => fake()->unique()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
+            'phone' => fake()->phoneNumber(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
         ];
