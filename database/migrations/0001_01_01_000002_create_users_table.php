@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('phone')->nullable(); 
             $table->string('password');
             $table->foreignId('role_id')->constrained('roles')->onDelete('cascade'); 
-            $table->string('photo')->nullable(); 
+            $table->string('photo')->nullable()->default('rutaPorDefecto.jpg'); 
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes(); 
