@@ -19,9 +19,10 @@ class UserSeeder extends Seeder
             'surname' => 'Flores',
             'name_user' => 'BeniFloqui',
             'email' => 'benieladmin@gmail.com',
+            'email_verified_at' => now(), 
             'phone' => '666666666',// Puede ser nulo
             'password' => '123456789',
-            'role_id' => Role::where('name', 'admin')->first()->id,
+            'role_id' => Role::where('role', 'admin')->first()->id,
             'photo' => 'url',// Puede ser nulo
         ]);   
         
