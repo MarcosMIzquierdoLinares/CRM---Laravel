@@ -45,4 +45,17 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function coursesAsTeacher(){ //función para devolver los cursos donde 
+        return $this->hasMany(Course::class, 'teahcer_id');
+    }
+
+    public function coursesAsCoordinator(){
+        return $this->hasMany(Course::class, 'coord_id');
+    }
+
+    public function coursesAsStudent(){
+        return $this->belongsToMany(Course::Class, 'course_student','student_id','course_id')->whithTimestamps();
+    }
+
 }
