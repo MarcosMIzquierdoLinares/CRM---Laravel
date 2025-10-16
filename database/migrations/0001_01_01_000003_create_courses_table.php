@@ -15,14 +15,19 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description');
-            $table->string('location')->unique();
-            $table->date('start_date')->unique();
+            $table->string('location');
+            $table->string('academic_year'); // 2024-2025
+            $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('coord_id')->constrained('users')->onDelete('cascade');
-            $table->string('status')->nullable();
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
+            $table->enum('status', ['active', 'inactive', 'completed'])->default('active');
             $table->timestamps();
             $table->softDeletes();
+            
+            // Un curso no puede tener la misma ubicación en el mismo año académico
+            $table->unique(['location', 'academic_year'], 'unique_course_location');
         });
     }
 

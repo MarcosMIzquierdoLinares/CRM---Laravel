@@ -31,8 +31,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'phone' => $this->faker->optional()->phoneNumber(),
             'password' => static::$password ??= Hash::make('password'),
-            'role_id' => null, 
-            'photo' => 'rutaPorDefecto.jpg',
+            'school_id' => 1, // Default school, será sobrescrito en los seeders
+            'photo' => 'default-avatar.jpg',
             'remember_token' => Str::random(10),
         ];
     }

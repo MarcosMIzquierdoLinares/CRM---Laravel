@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -19,8 +20,13 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'surname',
+        'name_user',
         'email',
+        'phone',
         'password',
+        'school_id',
+        'photo',
     ];
 
     /**
@@ -46,16 +52,49 @@ class User extends Authenticatable
         ];
     }
 
-    public function coursesAsTeacher(){ //función para devolver los cursos donde 
-        return $this->hasMany(Course::class, 'teahcer_id');
+    // Relaciones con School
+    public function school()
+    {
+        return $this->belongsTo(School::class);
     }
 
-    public function coursesAsCoordinator(){
+    // Relaciones académicas
+    public function coursesAsTeacher()
+    {
+        return $this->hasMany(Course::class, 'teacher_id');
+    }
+
+    public function coursesAsCoordinator()
+    {
         return $this->hasMany(Course::class, 'coord_id');
     }
 
-    public function coursesAsStudent(){
-        return $this->belongsToMany(Course::class, 'course_student','student_id','course_id')->whithTimestamps();
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
+    public function coursesAsStudent()
+    {
+        return $this->belongsToMany(Course::class, 'enrollments', 'user_id', 'course_id')
+                    ->withPivot('academic_year', 'enrollment_date', 'status')
+                    ->withTimestamps();
+    }
+
+    public function subjectsAsTeacher()
+    {
+        return $this->hasMany(Subject::class, 'teacher_id');
+    }
+
+    public function gradesAsStudent()
+    {
+        return $this->hasMany(Grade::class);
+    }
+
+    // Scopes
+    public function scopeBySchool($query, $schoolId)
+    {
+        return $query->where('school_id', $schoolId);
     }
 
 }
