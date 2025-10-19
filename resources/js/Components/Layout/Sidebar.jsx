@@ -7,6 +7,7 @@ import {
   BookOpen, 
   Award, 
   Building2,
+  FileText,
   Menu,
   ChevronLeft,
   ChevronRight
@@ -14,15 +15,17 @@ import {
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const { auth } = usePage().props;
-  const user = auth?.user;
+  // Obtener usuario desde localStorage ya que usamos JWT
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   const menuItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: Home, permission: null },
+    { name: 'Home', path: '/home', icon: Home, permission: null },
     { name: 'Usuarios', path: '/users', icon: Users, permission: 'view users' },
     { name: 'Cursos', path: '/courses', icon: GraduationCap, permission: 'view courses' },
     { name: 'Asignaturas', path: '/subjects', icon: BookOpen, permission: 'view subjects' },
     { name: 'Calificaciones', path: '/grades', icon: Award, permission: 'view grades' },
+    { name: '📝 Mis Reportes', path: '/reports/create', icon: FileText, permission: 'create reports' },
+    { name: '📋 Ver Reportes', path: '/reports', icon: FileText, permission: 'view reports' },
     { name: 'Colegios', path: '/schools', icon: Building2, permission: 'view schools' },
   ];
 
@@ -45,7 +48,7 @@ const Sidebar = () => {
             <div>
               <h1 className="font-bold text-sm">CRM</h1>
               <p className="text-xs text-gray-400 truncate max-w-32">
-                {user?.school?.name || 'Sistema'}
+                {user?.school?.name || user?.school?.full_name || 'Sistema'}
               </p>
             </div>
           </div>

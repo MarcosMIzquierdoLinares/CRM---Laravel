@@ -48,6 +48,10 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'edit enrollments']);
         Permission::create(['name' => 'delete enrollments']);
 
+        // Permisos para Reportes
+        Permission::create(['name' => 'create reports']);
+        Permission::create(['name' => 'view reports']);
+
         // Permisos administrativos
         Permission::create(['name' => 'manage roles']);
         Permission::create(['name' => 'manage permissions']);

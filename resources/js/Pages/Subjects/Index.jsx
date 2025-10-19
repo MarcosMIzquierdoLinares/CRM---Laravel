@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { router } from '@inertiajs/react';
 import Layout from '../../Components/Layout/Layout';
 import Card from '../../Components/UI/Card';
 import Button from '../../Components/UI/Button';
@@ -109,7 +110,11 @@ const SubjectsIndex = () => {
           </div>
           
           {user.permissions?.includes('create subjects') && (
-            <Button variant="primary" className="flex items-center">
+            <Button 
+              variant="primary" 
+              className="flex items-center"
+              onClick={() => router.visit('/subjects/create')}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Nueva Asignatura
             </Button>

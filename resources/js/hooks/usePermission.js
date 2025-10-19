@@ -68,7 +68,7 @@ export const usePermission = () => {
   // Función para verificar si el usuario puede acceder a una ruta específica
   const canAccess = (route) => {
     const routePermissions = {
-      '/dashboard': canViewDashboard,
+      '/home': canViewDashboard,
       '/users': canViewUsers,
       '/courses': canViewCourses,
       '/subjects': canViewSubjects,
@@ -92,7 +92,7 @@ export const usePermission = () => {
   // Función para obtener las rutas del menú que el usuario puede ver
   const getAccessibleRoutes = () => {
     const routes = [
-      { path: '/dashboard', name: 'Dashboard', icon: 'Home', permission: canViewDashboard },
+      { path: '/home', name: 'Home', icon: 'Home', permission: canViewDashboard },
       { path: '/users', name: 'Usuarios', icon: 'Users', permission: canViewUsers },
       { path: '/courses', name: 'Cursos', icon: 'GraduationCap', permission: canViewCourses },
       { path: '/subjects', name: 'Asignaturas', icon: 'BookOpen', permission: canViewSubjects },

@@ -39,6 +39,7 @@ class RoleSeeder extends Seeder
             'create enrollments',
             'edit enrollments',
             'delete enrollments',
+            'view reports',
             'view dashboard',
         ]);
 
@@ -51,6 +52,7 @@ class RoleSeeder extends Seeder
             'create grades',
             'edit grades',
             'view enrollments',
+            'create reports',
             'view dashboard',
         ]);
 

@@ -15,13 +15,18 @@ const Header = () => {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
           },
         });
       }
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     } finally {
+      // Limpiar todo el localStorage
       localStorage.removeItem('jwt_token');
+      localStorage.removeItem('user');
+      
+      // Redirigir al login
       router.visit('/');
     }
   };
@@ -30,7 +35,7 @@ const Header = () => {
     <header className="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center justify-between px-6">
       {/* Breadcrumbs */}
       <div className="flex items-center space-x-2 text-sm text-gray-600">
-        <span>Dashboard</span>
+        <span>Home</span>
         <span>/</span>
         <span className="text-gray-900 font-medium">
           {user?.school?.full_name || 'Sistema CRM'}

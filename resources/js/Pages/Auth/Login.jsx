@@ -43,7 +43,7 @@ const Login = () => {
       if (data.success) {
         localStorage.setItem('jwt_token', data.data.token);
         localStorage.setItem('user', JSON.stringify(data.data.user));
-        router.visit('/dashboard');
+        router.visit('/home');
       } else {
         setError(data.message || 'Error al iniciar sesión');
       }
@@ -129,11 +129,37 @@ const Login = () => {
 
         {/* Demo credentials */}
         <Card className="mt-6" padding="sm">
-          <h3 className="font-medium text-gray-900 mb-2">Credenciales de prueba:</h3>
-          <div className="text-sm text-gray-600 space-y-1">
-            <p><strong>Admin:</strong> admin@iessanjuan.edu / password123</p>
-            <p><strong>Profesor:</strong> [email generado] / password123</p>
-            <p><strong>Estudiante:</strong> [email generado] / password123</p>
+          <h3 className="font-medium text-gray-900 mb-3">🔑 Credenciales de prueba:</h3>
+          <div className="text-sm space-y-2">
+            <div className="p-2 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+              <p className="font-medium text-blue-900">👨‍💼 Administrador</p>
+              <p className="text-blue-700">admin@iessanjuan.edu</p>
+              <p className="text-blue-600 font-mono">password123</p>
+            </div>
+            
+            <div className="p-2 bg-green-50 rounded-lg border-l-4 border-green-400">
+              <p className="font-medium text-green-900">👩‍🏫 Coordinador</p>
+              <p className="text-green-700">coordinador@test.com</p>
+              <p className="text-green-600 font-mono">password123</p>
+            </div>
+            
+            <div className="p-2 bg-purple-50 rounded-lg border-l-4 border-purple-400">
+              <p className="font-medium text-purple-900">👨‍🏫 Profesor</p>
+              <p className="text-purple-700">profesor@test.com</p>
+              <p className="text-purple-600 font-mono">password123</p>
+            </div>
+            
+            <div className="p-2 bg-orange-50 rounded-lg border-l-4 border-orange-400">
+              <p className="font-medium text-orange-900">👨‍🎓 Estudiante</p>
+              <p className="text-orange-700">estudiante@test.com</p>
+              <p className="text-orange-600 font-mono">password123</p>
+            </div>
+          </div>
+          
+          <div className="mt-3 p-2 bg-gray-50 rounded-lg">
+            <p className="text-xs text-gray-600">
+              💡 <strong>Nota:</strong> Todos los usuarios generados por el seeder tienen la contraseña <code>password123</code>
+            </p>
           </div>
         </Card>
       </div>

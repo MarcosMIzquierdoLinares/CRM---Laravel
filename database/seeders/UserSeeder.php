@@ -54,5 +54,58 @@ class UserSeeder extends Seeder
                 $student->assignRole('student');
             }
         }
+
+        // Crear usuarios específicos para testing con emails fijos
+        $firstSchool = School::first();
+        
+        if ($firstSchool) {
+            // Usuario coordinador para testing
+            $coordinator = User::firstOrCreate(
+                ['email' => 'coordinador@test.com'],
+                [
+                    'name' => 'Coordinador',
+                    'surname' => 'Test',
+                    'name_user' => 'coord_test',
+                    'email' => 'coordinador@test.com',
+                    'phone' => '+34 93 234 56 78',
+                    'password' => Hash::make('password123'),
+                    'school_id' => $firstSchool->id,
+                    'photo' => 'default-avatar.jpg',
+                ]
+            );
+            $coordinator->assignRole('coordinator');
+
+            // Usuario profesor para testing
+            $teacher = User::firstOrCreate(
+                ['email' => 'profesor@test.com'],
+                [
+                    'name' => 'Profesor',
+                    'surname' => 'Test',
+                    'name_user' => 'teacher_test',
+                    'email' => 'profesor@test.com',
+                    'phone' => '+34 95 345 67 89',
+                    'password' => Hash::make('password123'),
+                    'school_id' => $firstSchool->id,
+                    'photo' => 'default-avatar.jpg',
+                ]
+            );
+            $teacher->assignRole('teacher');
+
+            // Usuario estudiante para testing
+            $student = User::firstOrCreate(
+                ['email' => 'estudiante@test.com'],
+                [
+                    'name' => 'Estudiante',
+                    'surname' => 'Test',
+                    'name_user' => 'student_test',
+                    'email' => 'estudiante@test.com',
+                    'phone' => '+34 600 000 000',
+                    'password' => Hash::make('password123'),
+                    'school_id' => $firstSchool->id,
+                    'photo' => 'default-avatar.jpg',
+                ]
+            );
+            $student->assignRole('student');
+        }
     }
 }

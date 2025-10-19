@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { router } from '@inertiajs/react';
 import Layout from '../../Components/Layout/Layout';
 import Card from '../../Components/UI/Card';
 import Button from '../../Components/UI/Button';
@@ -95,6 +96,47 @@ const UsersIndex = () => {
     return colors[role] || 'bg-gray-100 text-gray-800';
   };
 
+  const exportToCSV = () => {
+    try {
+      // Crear headers CSV
+      const headers = ['ID', 'Nombre', 'Apellido', 'Email', 'Usuario', 'Rol', 'Teléfono', 'Colegio'];
+      
+      // Crear filas de datos
+      const csvRows = [headers.join(',')];
+      
+      users.forEach(user => {
+        const row = [
+          user.id,
+          `"${user.name || ''}"`,
+          `"${user.surname || ''}"`,
+          `"${user.email || ''}"`,
+          `"${user.name_user || ''}"`,
+          `"${user.roles?.[0] || ''}"`,
+          `"${user.phone || ''}"`,
+          `"${user.school?.name || ''}"`
+        ];
+        csvRows.push(row.join(','));
+      });
+
+      // Crear y descargar archivo
+      const csvContent = csvRows.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `usuarios_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      alert('Error al exportar el archivo CSV');
+    }
+  };
+
   return (
     <Layout>
       <div className="mb-6">
@@ -107,12 +149,28 @@ const UsersIndex = () => {
             <p className="text-gray-600">Administra todos los usuarios del sistema</p>
           </div>
           
-          {user.permissions?.includes('create users') && (
-            <Button variant="primary" className="flex items-center">
-              <Plus className="w-4 h-4 mr-2" />
-              Nuevo Usuario
-            </Button>
-          )}
+          <div className="flex items-center space-x-3">
+            {user.permissions?.includes('view users') && (
+              <Button 
+                variant="outline" 
+                className="flex items-center"
+                onClick={exportToCSV}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Exportar CSV
+              </Button>
+            )}
+            {user.permissions?.includes('create users') && (
+              <Button 
+                variant="primary" 
+                className="flex items-center"
+                onClick={() => router.visit('/users/create')}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Nuevo Usuario
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

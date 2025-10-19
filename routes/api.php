@@ -9,6 +9,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\DashboardController;
 
 // Rutas públicas de autenticación
 Route::post('/login', [AuthController::class, 'login']);
@@ -20,6 +21,9 @@ Route::middleware(['jwt.auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
+
+    // Dashboard stats
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
 
     // Rutas de Schools (solo admin)
     Route::middleware(['permission:view schools'])->group(function () {
