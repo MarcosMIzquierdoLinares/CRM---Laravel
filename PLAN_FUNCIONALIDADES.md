@@ -20,6 +20,7 @@
 - Crear nuevo curso
 - Exportar datos del sistema
 - Gestión de roles y permisos
+- Descargar PDF de estadísticas globales
 
 ---
 
@@ -115,28 +116,35 @@
    - Logout funcional
    - Permisos por rol implementados
 
-2. **📊 Dashboard Dinámico**
-   - Estadísticas reales por rol desde APIs
-   - Acciones rápidas funcionales
-   - Navegación directa a formularios
+2. **📊 Estadísticas y Dashboard Dinámico**
+   - Estadísticas por rol y panel exclusivo para Admin con exportación PDF
+   - Botón directo en la toolbar para abrir estadísticas y descargar informe actualizado
+   - Acciones rápidas funcionales con navegación directa a formularios
 
 3. **📝 Formularios CRUD Completos**
    - **Usuarios**: Crear, listar, editar, eliminar
-   - **Cursos**: Crear con profesores y coordinadores asignados
-   - **Asignaturas**: Crear con cursos y profesores
-   - **Calificaciones**: Crear con validaciones por rol
+   - **Cursos**: Crear con profesores y coordinadores asignados + edición completa
+   - **Asignaturas**: Formularios de creación/edición conectados a datos reales
+   - **Calificaciones**: Crear/editar con validaciones por rol y confirmaciones antes de eliminar
 
 4. **📋 Sistema de Reportes**
-   - Formulario completo para reportes diarios de profesores
-   - Vista de reportes para coordinadores con filtros
-   - Prioridades y estados de lectura
+   - Migración y API reales (`GET/POST/PATCH/DELETE`)
+   - Profesores envían reportes diarios conectados a backend
+   - Coordinadores filtran, marcan como leído y eliminan según permisos
+   - Prioridades y estados de lectura visibles en la UI
 
-5. **🔍 Funcionalidades Avanzadas**
+5. **🔔 Sistema de Notificaciones In-App**
+   - Menú de campana con contador en tiempo real
+   - Notificaciones automáticas por nuevos reportes o calificaciones
+   - Opciones para marcar individuales o todas como leídas
+
+6. **🔍 Funcionalidades Avanzadas**
    - Búsqueda y filtros en todas las páginas
    - Exportación CSV de datos
-   - Navegación intuitiva y responsive
+   - Confirmaciones reutilizables antes de eliminar en todos los CRUD
+   - Documentación `CRUD_PERMISSIONS.md` y `ROLES_PERMISSIONS.md` para trazabilidad de permisos
 
-6. **👥 Gestión por Roles**
+7. **👥 Gestión por Roles**
    - **Admin**: Acceso total al sistema
    - **Coordinator**: Gestión de su centro y reportes
    - **Teacher**: Sus asignaturas, calificaciones y reportes
@@ -150,20 +158,17 @@ El CRM educativo está completamente funcional y listo para ser utilizado por lo
 ## 🛠️ **PRÓXIMOS PASOS SUGERIDOS**
 
 ### **Mejoras Inmediatas** 🔧
-1. **Implementar backend completo** para reportes
-   - Modelo `Report` con migración
-   - API endpoints para crear/listar reportes
-   - Conectar formulario con APIs reales
+1. **Reportes avanzados y detalle**
+   - Vista modal/detalle completo del reporte
+   - Historial de cambios y adjuntos opcionales
 
-2. **Sistema de notificaciones**
-   - Notificaciones push o email
-   - Alertas de reportes no leídos
-   - Recordatorios de tareas pendientes
+2. **Notificaciones externas**
+   - Integrar email/SMS/push para eventos críticos
+   - Configurar recordatorios programados
 
-3. **Funcionalidades de edición**
-   - Formularios de edición para todos los CRUD
-   - Validaciones mejoradas del backend
-   - Confirmaciones antes de eliminar
+3. **Auditoría y validaciones**
+   - Reglas adicionales en backend (ej. límites por rol)
+   - Log de acciones críticas y exportaciones
 
 ### **Funcionalidades Avanzadas** ⚡
 1. **Gráficos y estadísticas**
@@ -172,7 +177,7 @@ El CRM educativo está completamente funcional y listo para ser utilizado por lo
    - Reportes mensuales automatizados
 
 2. **Gestión de archivos**
-   - Subida de documentos
+   - Subida de documentos (por reporte o estudiante)
    - Galería de imágenes por estudiante
    - Exportación de boletines de notas
 
