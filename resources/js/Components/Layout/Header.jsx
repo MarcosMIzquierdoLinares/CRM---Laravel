@@ -1,10 +1,11 @@
 import React from 'react';
 import { usePage, router } from '@inertiajs/react';
-import { Bell, LogOut, User } from 'lucide-react';
+import { LogOut, User, BarChart3 } from 'lucide-react';
+import NotificationBell from '../Notifications/NotificationBell';
 
 const Header = () => {
   const { auth } = usePage().props;
-  const user = auth?.user;
+  const user = auth?.user || JSON.parse(localStorage.getItem('user') || '{}');
 
   const handleLogout = async () => {
     try {
@@ -44,11 +45,17 @@ const Header = () => {
 
       {/* User menu */}
       <div className="flex items-center space-x-4">
-        {/* Notificaciones */}
-        <button className="p-2 hover:bg-gray-100 rounded-full relative">
-          <Bell size={20} className="text-gray-600" />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
+        {user?.roles?.includes('admin') && (
+          <button
+            className="flex items-center px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:bg-gray-50"
+            onClick={() => router.visit('/statistics')}
+          >
+            <BarChart3 className="w-4 h-4 mr-2 text-blue-600" />
+            Estadísticas
+          </button>
+        )}
+
+        <NotificationBell />
 
         {/* Usuario */}
         <div className="flex items-center space-x-3">

@@ -4,6 +4,7 @@ import Layout from '../../Components/Layout/Layout';
 import Card from '../../Components/UI/Card';
 import Button from '../../Components/UI/Button';
 import Input from '../../Components/UI/Input';
+import ConfirmDialog from '../../Components/UI/ConfirmDialog';
 import { 
   GraduationCap, 
   Plus, 
@@ -24,6 +25,8 @@ const CoursesIndex = () => {
   const [academicYearFilter, setAcademicYearFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, targetId: null });
+  const [processing, setProcessing] = useState(false);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -61,14 +64,22 @@ const CoursesIndex = () => {
     }
   };
 
-  const handleDelete = async (courseId) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar este curso?')) {
-      return;
-    }
+  const requestDelete = (courseId, name) => {
+    setConfirmDialog({
+      open: true,
+      targetId: courseId,
+      title: 'Eliminar curso',
+      description: `¿Seguro que quieres eliminar ${name}? Esta acción no se puede deshacer.`,
+    });
+  };
+
+  const handleDelete = async () => {
+    if (!confirmDialog.targetId) return;
 
     try {
+      setProcessing(true);
       const token = localStorage.getItem('jwt_token');
-      const response = await fetch(`/api/courses/${courseId}`, {
+      const response = await fetch(`/api/courses/${confirmDialog.targetId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -86,6 +97,9 @@ const CoursesIndex = () => {
     } catch (error) {
       console.error('Error deleting course:', error);
       alert('Error al eliminar el curso');
+    } finally {
+      setProcessing(false);
+      setConfirmDialog({ open: false, targetId: null });
     }
   };
 
@@ -260,6 +274,7 @@ const CoursesIndex = () => {
                               variant="outline"
                               size="sm"
                               className="flex items-center"
+                              onClick={() => router.visit(`/courses/${course.id}/edit`)}
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
@@ -269,7 +284,7 @@ const CoursesIndex = () => {
                             <Button
                               variant="danger"
                               size="sm"
-                              onClick={() => handleDelete(course.id)}
+                              onClick={() => requestDelete(course.id, course.name)}
                               className="flex items-center"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -312,6 +327,14 @@ const CoursesIndex = () => {
           </>
         )}
       </Card>
+      <ConfirmDialog
+        open={confirmDialog.open}
+        title={confirmDialog.title}
+        description={confirmDialog.description}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmDialog({ open: false, targetId: null })}
+        loading={processing}
+      />
     </Layout>
   );
 };

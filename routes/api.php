@@ -10,10 +10,12 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StatisticsController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\NotificationController;
 
 // Rutas públicas de autenticación
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
 
 // Rutas protegidas con JWT
 Route::middleware(['jwt.auth'])->group(function () {
@@ -24,6 +26,7 @@ Route::middleware(['jwt.auth'])->group(function () {
 
     // Dashboard stats
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+    Route::get('/statistics', [StatisticsController::class, 'index']);
 
     // Rutas de Schools (solo admin)
     Route::middleware(['permission:view schools'])->group(function () {
@@ -67,4 +70,17 @@ Route::middleware(['jwt.auth'])->group(function () {
         Route::get('/my-grades', [GradeController::class, 'getMyGrades']);
         Route::get('/my-courses', [EnrollmentController::class, 'getMyCourses']);
     });
+
+    // Reportes
+    Route::get('/reports', [ReportController::class, 'index']);
+    Route::post('/reports', [ReportController::class, 'store']);
+    Route::get('/reports/{report}', [ReportController::class, 'show']);
+    Route::patch('/reports/{report}/read', [ReportController::class, 'markAsRead']);
+    Route::delete('/reports/{report}', [ReportController::class, 'destroy']);
+
+    // Notificaciones
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::patch('/notifications/{notification}/read', [NotificationController::class, 'markAsRead']);
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
 });

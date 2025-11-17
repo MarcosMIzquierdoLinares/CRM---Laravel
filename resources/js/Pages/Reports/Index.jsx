@@ -4,7 +4,8 @@ import Layout from '../../Components/Layout/Layout';
 import Card from '../../Components/UI/Card';
 import Button from '../../Components/UI/Button';
 import Input from '../../Components/UI/Input';
-import { FileText, Plus, Search, Calendar, User, AlertCircle, CheckCircle, Clock, Filter } from 'lucide-react';
+import ConfirmDialog from '../../Components/UI/ConfirmDialog';
+import { FileText, Plus, Search, Calendar, User, AlertCircle, CheckCircle } from 'lucide-react';
 
 const ReportsIndex = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -15,39 +16,45 @@ const ReportsIndex = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, targetId: null });
+  const [processing, setProcessing] = useState(false);
 
-  // Datos simulados para demostración
   useEffect(() => {
-    const mockReports = [
-      {
-        id: 1,
-        title: 'Reporte de clase Matemáticas 2º ESO',
-        teacher_name: 'Ana García',
-        date: '2024-10-17',
-        priority: 'normal',
-        status: 'read',
-        class_progress: 'Avance normal en ecuaciones de segundo grado. Algunos estudiantes necesitan refuerzo.',
-        incidents: 'Falta de material de geometría para la próxima clase.',
-        next_activities: 'Examen parcial la próxima semana.'
-      },
-      {
-        id: 2,
-        title: 'Incidente en Laboratorio de Ciencias',
-        teacher_name: 'Carlos López',
-        date: '2024-10-16',
-        priority: 'high',
-        status: 'unread',
-        class_progress: 'Práctica de química interrumpida por problema en equipos.',
-        incidents: 'Fallo eléctrico en 3 de los equipos del laboratorio. Necesaria revisión urgente.',
-        next_activities: 'Solicito revisión técnica para el viernes.'
-      }
-    ];
+    fetchReports();
+  }, [page, priorityFilter, statusFilter]);
 
-    setTimeout(() => {
-      setReports(mockReports);
+  const fetchReports = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('jwt_token');
+      let url = `/api/reports?page=${page}`;
+      if (priorityFilter) url += `&priority=${priorityFilter}`;
+      if (statusFilter) url += `&status=${statusFilter}`;
+
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'No se pudieron cargar los reportes');
+      }
+
+      setReports(data.data.data);
+      setTotalPages(data.data.last_page);
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+      alert(error.message);
+    } finally {
       setLoading(false);
-    }, 1000);
-  }, []);
+    }
+  };
 
   const getPriorityColor = (priority) => {
     const colors = {
@@ -70,11 +77,75 @@ const ReportsIndex = () => {
   };
 
   const filteredReports = reports.filter(report => {
+    const teacherName = `${report.teacher?.name || ''} ${report.teacher?.surname || ''}`.trim().toLowerCase();
     const matchesSearch = report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         report.teacher_name.toLowerCase().includes(searchTerm.toLowerCase());
+                         teacherName.includes(searchTerm.toLowerCase());
     const matchesPriority = !priorityFilter || report.priority === priorityFilter;
     return matchesSearch && matchesPriority;
   });
+
+  const handleMarkAsRead = async (reportId) => {
+    try {
+      setProcessing(true);
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`/api/reports/${reportId}/read`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'No se pudo actualizar el reporte');
+      }
+
+      fetchReports();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const openDeleteDialog = (reportId) => {
+    setConfirmDialog({
+      open: true,
+      targetId: reportId,
+      title: 'Eliminar reporte',
+      description: '¿Seguro que quieres eliminar este reporte? Esta acción no se puede deshacer.',
+    });
+  };
+
+  const handleDelete = async () => {
+    if (!confirmDialog.targetId) return;
+    try {
+      setProcessing(true);
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch(`/api/reports/${confirmDialog.targetId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'No se pudo eliminar el reporte');
+      }
+
+      fetchReports();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setProcessing(false);
+      setConfirmDialog({ open: false, targetId: null });
+    }
+  };
+
+  const teacherName = (report) => `${report.teacher?.name || ''} ${report.teacher?.surname || ''}`.trim() || 'Sin profesor';
 
   return (
     <Layout>
@@ -131,6 +202,15 @@ const ReportsIndex = () => {
               <option value="normal">Normal</option>
               <option value="high">Alta</option>
               <option value="urgent">Urgente</option>
+            </select>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Todos los estados</option>
+              <option value="unread">No leídos</option>
+              <option value="read">Leídos</option>
             </select>
           </div>
         </div>
@@ -194,7 +274,7 @@ const ReportsIndex = () => {
                     <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                       <div className="flex items-center">
                         <User className="w-4 h-4 mr-1" />
-                        {report.teacher_name}
+                        {teacherName(report)}
                       </div>
                       <div className="flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
@@ -220,17 +300,28 @@ const ReportsIndex = () => {
                     </div>
                   </div>
                   
-                  <div className="ml-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        // Aquí se abriría un modal o página de detalles
-                        alert('Funcionalidad de detalles en desarrollo');
-                      }}
-                    >
-                      Ver detalles
-                    </Button>
+                  <div className="ml-4 flex flex-col space-y-2">
+                    {isCoordinator && report.status === 'unread' && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleMarkAsRead(report.id)}
+                        disabled={processing}
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Marcar leído
+                      </Button>
+                    )}
+                    {(String(report.teacher_id) === String(user.id) || user.roles?.includes('admin')) && (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => openDeleteDialog(report.id)}
+                        disabled={processing}
+                      >
+                        Eliminar
+                      </Button>
+                    )}
                   </div>
                 </div>
               </Card.Content>
@@ -238,6 +329,31 @@ const ReportsIndex = () => {
           ))
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-6 flex items-center justify-between">
+          <span className="text-sm text-gray-600">
+            Página {page} de {totalPages}
+          </span>
+          <div className="space-x-2">
+            <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>
+              Anterior
+            </Button>
+            <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(page + 1)}>
+              Siguiente
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <ConfirmDialog
+        open={confirmDialog.open}
+        title={confirmDialog.title}
+        description={confirmDialog.description}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmDialog({ open: false, targetId: null })}
+        loading={processing}
+      />
     </Layout>
   );
 };

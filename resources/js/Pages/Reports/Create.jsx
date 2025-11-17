@@ -43,15 +43,29 @@ const ReportsCreate = () => {
     setErrors({});
 
     try {
-      // Por ahora simulamos el envío del reporte
-      // En una implementación real, aquí harías el POST a la API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      const token = localStorage.getItem('jwt_token');
+      const response = await fetch('/api/reports', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setErrors(data.errors || {});
+        throw new Error(data.message || 'No se pudo enviar el reporte');
+      }
+
       alert('Reporte enviado exitosamente al coordinador');
-      router.visit('/home');
+      router.visit('/reports');
     } catch (error) {
       console.error('Error sending report:', error);
-      alert('Error al enviar el reporte');
+      alert(error.message || 'Error al enviar el reporte');
     } finally {
       setLoading(false);
     }

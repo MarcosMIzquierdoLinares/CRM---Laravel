@@ -21,6 +21,10 @@ Route::get('/users/create', function () {
     return Inertia::render('Users/Create');
 })->name('users.create');
 
+Route::get('/users/{user}/edit', function () {
+    return Inertia::render('Users/Edit');
+})->name('users.edit');
+
 Route::get('/courses', function () {
     return Inertia::render('Courses/Index');
 })->name('courses.index');
@@ -28,6 +32,10 @@ Route::get('/courses', function () {
 Route::get('/courses/create', function () {
     return Inertia::render('Courses/Create');
 })->name('courses.create');
+
+Route::get('/courses/{course}/edit', function () {
+    return Inertia::render('Courses/Edit');
+})->name('courses.edit');
 
 Route::get('/subjects', function () {
     return Inertia::render('Subjects/Index');
@@ -37,6 +45,14 @@ Route::get('/subjects/create', function () {
     return Inertia::render('Subjects/Create');
 })->name('subjects.create');
 
+Route::get('/subjects/{subject}/edit', function () {
+    return Inertia::render('Subjects/Edit');
+})->name('subjects.edit');
+
+Route::get('/statistics', function () {
+    return Inertia::render('Statistics');
+})->name('statistics');
+
 Route::get('/grades', function () {
     return Inertia::render('Grades/Index');
 })->name('grades.index');
@@ -44,6 +60,10 @@ Route::get('/grades', function () {
 Route::get('/grades/create', function () {
     return Inertia::render('Grades/Create');
 })->name('grades.create');
+
+Route::get('/grades/{grade}/edit', function () {
+    return Inertia::render('Grades/Edit');
+})->name('grades.edit');
 
 Route::get('/schools', function () {
     return Inertia::render('Schools/Index');

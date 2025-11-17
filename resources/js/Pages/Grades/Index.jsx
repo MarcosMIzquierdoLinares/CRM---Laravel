@@ -4,6 +4,7 @@ import Layout from '../../Components/Layout/Layout';
 import Card from '../../Components/UI/Card';
 import Button from '../../Components/UI/Button';
 import Input from '../../Components/UI/Input';
+import ConfirmDialog from '../../Components/UI/ConfirmDialog';
 import { 
   Award, 
   Plus, 
@@ -25,6 +26,8 @@ const GradesIndex = () => {
   const [subjectFilter, setSubjectFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [confirmDialog, setConfirmDialog] = useState({ open: false, targetId: null });
+  const [processing, setProcessing] = useState(false);
 
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -62,14 +65,22 @@ const GradesIndex = () => {
     }
   };
 
-  const handleDelete = async (gradeId) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar esta calificación?')) {
-      return;
-    }
+  const requestDelete = (gradeId) => {
+    setConfirmDialog({
+      open: true,
+      targetId: gradeId,
+      title: 'Eliminar calificación',
+      description: '¿Seguro que quieres eliminar esta calificación? Esta acción no se puede deshacer.',
+    });
+  };
+
+  const handleDelete = async () => {
+    if (!confirmDialog.targetId) return;
 
     try {
+      setProcessing(true);
       const token = localStorage.getItem('jwt_token');
-      const response = await fetch(`/api/grades/${gradeId}`, {
+      const response = await fetch(`/api/grades/${confirmDialog.targetId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -87,6 +98,9 @@ const GradesIndex = () => {
     } catch (error) {
       console.error('Error deleting grade:', error);
       alert('Error al eliminar la calificación');
+    } finally {
+      setProcessing(false);
+      setConfirmDialog({ open: false, targetId: null });
     }
   };
 
@@ -321,6 +335,7 @@ const GradesIndex = () => {
                               variant="outline"
                               size="sm"
                               className="flex items-center"
+                              onClick={() => router.visit(`/grades/${grade.id}/edit`)}
                             >
                               <Edit className="w-4 h-4" />
                             </Button>
@@ -330,7 +345,7 @@ const GradesIndex = () => {
                             <Button
                               variant="danger"
                               size="sm"
-                              onClick={() => handleDelete(grade.id)}
+                              onClick={() => requestDelete(grade.id)}
                               className="flex items-center"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -373,6 +388,14 @@ const GradesIndex = () => {
           </>
         )}
       </Card>
+      <ConfirmDialog
+        open={confirmDialog.open}
+        title={confirmDialog.title}
+        description={confirmDialog.description}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmDialog({ open: false, targetId: null })}
+        loading={processing}
+      />
     </Layout>
   );
 };

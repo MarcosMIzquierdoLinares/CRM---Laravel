@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grade;
+use App\Models\Notification;
 use App\Models\User;
 use App\Models\Subject;
 use Illuminate\Http\Request;
@@ -98,6 +99,8 @@ class GradeController extends Controller
 
         $grade = Grade::create($request->all());
 
+        $this->notifyStudent($grade);
+
         return response()->json([
             'success' => true,
             'message' => 'Calificación creada exitosamente',
@@ -171,6 +174,8 @@ class GradeController extends Controller
         }
 
         $grade->update($request->all());
+
+        $this->notifyStudent($grade);
 
         return response()->json([
             'success' => true,
@@ -271,6 +276,21 @@ class GradeController extends Controller
         return response()->json([
             'success' => true,
             'data' => $grades
+        ]);
+    }
+
+    private function notifyStudent(Grade $grade): void
+    {
+        Notification::create([
+            'user_id' => $grade->user_id,
+            'type' => 'grade',
+            'title' => 'Nueva calificación registrada',
+            'message' => "Has recibido una nota en {$grade->subject->name} (Evaluación {$grade->evaluation}).",
+            'data' => [
+                'grade_id' => $grade->id,
+                'subject_id' => $grade->subject_id,
+                'score' => $grade->grade,
+            ],
         ]);
     }
 }
